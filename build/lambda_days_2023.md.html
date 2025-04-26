@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title = &quot;Lambda_days_2023&quot;
+date = &quot;2023-06-06T20:29:35+02:00&quot;
+author = &quot;&quot;
+authorTwitter = &quot;&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;&quot;, &quot;&quot;]
+keywords = [&quot;&quot;, &quot;&quot;]
+description = &quot;&quot;
+showFullContent = false
+readingTime = false
+draft = true
++++</p>
+<p>Summary of my time at my first time at Lambda_days_2023!</p>
+<p>Most of these summaries are what I got from the talk, not neccesarily what the
+speaker wanted to say with the talk.</p>
+<p>Talk1: Learning kids FP</p>
+<p>I was a bit skeptical on the notion of learning kids FP. In some way I think of
+FP as difficult, but I think it mostly comes down to what perspective you have.
+Impertive programming languages were mad based on how computers work. But is
+that really neccesary in this day and age? When you look at the syntax its must
+closer to math, and then easier for kids and new prorammers to reason about.
+This can make learning about computer science, and not just small implementation
+details of some language (looking at you public final static main java!). And
+often a GC-programming language works for most problems. Why have to think about
+the arcitechure, when you can just code that is easier to read and reason about?
+That was my takeaway</p>
+<p>Talk2: Bringin Lambda to Excel
+Wow, Excel is crazy, Microsoft seems to put a lot of time and effort into keep
+innovating with Excel. They have introduced Lambdas, or functions. Giving you a
+much more expressive programming language to work with your cells. And as they
+say Excel is the biggest functional programming language. I think Excel as a
+tool is really interesting. And i discussed this with my fellow norwegian at the
+conference. People sit day in and day out working in Excel not realising that
+they are in fact programming!</p>
+<p>Another interesting tidbit is the way of distributing these code snippes are
+through gihtub gists. Seems like an attack vector. &quot;yeah just use this gist in
+your spreadsheet, dont look throught it&quot;</p>
+<p>They also did this in the public sphere and used the feedback to iterate on the
+product. Listening to feedback on the forums, HN and youtube.</p>
+<p>Talk3: Blue green deployment
+I didn't understand much of this talk, just that kubernetes is f*kn complicated.
+I was just thinking is there really no other way of doing it? They had stateful
+pods because of the use of Erlang and websockets, with live auctions</p>
+<p>Talk4: when testing doesnt cut it</p>
+<p>formal verification is very interesing, but I'm not sure if I'll really
+understand how it works. Did you know airplanes have formally verified C
+compilers? He talked about a common digital currency project, and how a core of
+this would be nice to be formally verified. He showed everything but the
+interesting part, the implementation ( because of IP issues). So it just sounds
+great, but I have no idea how you do it, and how it scales in a system</p>
+<p>Talk 5: Conor
+I've been following Conor for a while on youtube and was really exctied to see a
+talk about combinators,which are often mentioned in his videos. First of all,
+this man can speak reaaaally fast without losing any momemtun. I tried APl, all
+well and good</p>
+<p>Talk 6: Easy dependent types
+It was not easy, I couldn't grasp the example. Its just how it is. These
+conferences gathers people with different interest and I don't think everyone
+can indulge in every aspects of functional programming.</p>
+<p>Talk 7: Delimited continuatines
+I fell off quite quick. I though I understood algebraic effects somehow, but
+this was no the same thing? She is atleast working on implementing this in GHC.
+She has some great blogposts if you haven't heard about her:</p>
+<p>Day 2!</p>
+<p>Talk 2.1: Verse!
+Wow really interesing. functional logic. How is this different from Prolog? No
+one was talking about that, but Tim Sweeney seemed to light up when i mentioned
+this to him in a chat-session in the &quot;chillout room&quot;. interesing to see how it
+will evolve. Tim is a biiig language nerd, with a long successfull CV. I can't
+believe he is a CEO of one of the biggest gaming companies.</p>
+<p>Talk 2.2: Gren
+The norwegian talk! Gren is elm for the backend and the frontend. And the
+comments on how we need a easy to learn language, which makes it hard to make
+mistakes and can run anywhere is still a missing puzzle. Most application don't
+need to be lighting fast, so don't let it come in the way of API</p>
+<p>Talk 2.3: Unison!
+really exciting. content-addressable functions, effect systems, plans of a
+distributed system. No textfiles for code?</p>
+<p>Talk 2.4: livebook</p>
+<p>Jupyter notebooks is nice. But notebooks for a functional programming language?
+Much nicer! It lets you handle dependency between cells much easier. And it
+includes simple graphical possiblites of exploring, which I think notebooks
+really are meant for. I believe any programming course should have a notebook</p>
+<p>after this I was tired, and retired back to the hotel. All in all, a great
+experience. Many interesting speakers, and topics</p>
+
+      </div>
+    </div>
+  </body>
+</html>

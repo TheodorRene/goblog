@@ -14,7 +14,7 @@
     .container {
       display: flex;
       justify-content: center;
-      padding: 0 24px; /* padding on sides (mobile safe) */
+      padding: 0 24px;  
     }
     .post {
       display: flex;
@@ -49,7 +49,7 @@
       text-underline-offset: 4px;
     }
     .fade-in {
-      animation: fadeIn 0.6s ease-out;
+      animation: fadeIn 0.1s ease-out;
     }
 
     @keyframes fadeIn {
@@ -69,7 +69,28 @@
     <div class="container">
       <div class="post fade-in">
         <h1>Blog</h1>
-        {{.}}
+        <p>+++
+title = &quot;Just setting up my twttr&quot;
+date = &quot;2021-12-27T12:46:57+01:00&quot;
+author = &quot;Theodor René Carlsen&quot;
+authorTwitter = &quot;teddytroll&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;hello&quot;, &quot;world&quot;]
+keywords = [&quot;&quot;, &quot;&quot;]
+description = &quot;Initial post&quot;
+showFullContent = true
+readingTime = false
++++</p>
+<h1>Hei</h1>
+<p>I've been thinking about setting up a blog for some time now. Hopefully there
+will be more than this initial post, but you know how it is. There is probably a
+million posts out there like this one. Default theme, initial post, hello world
+type stuff.</p>
+<h2>Setup</h2>
+<p>The page is made using Hugo and is deployed through Netlify. I might write a
+more comprehensive post about it later. There link to repo is <a href="%22https://github.com/TheodorRene/blog%22">here</a>. I'm still learning the possibilities with Hugo but the most important
+thing is get the site up and have an easy way to write posts.</p>
+
       </div>
     </div>
   </body>

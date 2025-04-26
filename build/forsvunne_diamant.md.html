@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title = &quot;Forsvunne_diamant&quot;
+date = &quot;2023-11-04T22:25:51+01:00&quot;
+author = &quot;&quot;
+authorTwitter = &quot;&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;&quot;, &quot;&quot;]
+keywords = [&quot;&quot;, &quot;&quot;]
+description = &quot;&quot;
+showFullContent = false
+readingTime = false
+draft = true
++++</p>
+<p>A popular board game when I was a kid is &quot;Den forsvunne diamant&quot;, or &quot;Jakten på
+den forsvunne diamant&quot; as I thought it was
+<a href="https://en.wikipedia.org/wiki/False_memory#Mandela_effect">called</a>. Roughly
+translated its the &quot;The missing diamond&quot;. You throw a dice which decides how
+many steps you move and the you look under pieces on the board. Under them you
+could possibly find the diamond! This gives me my cheap segway in to todays
+blogpost. What happens to the missing commit? Lets put on our adventurer
+hat(pith helmet?) and find it</p>
+<p>I've always recommended rebasing when I join teams because I argue that it leads
+to a cleaner history and a simple mental model. Instead of a complex tree that
+diverges and meets again you get a single linear history which you can travel
+back and forth on. Unfortunately it just leads being messing up their git
+history, breaking Github somehow or just reverting to merge. Which in the ends
+is fine. Pragmatism is something I've learned this first year in the industry
+and its an awakener for me.</p>
+<p>But there is one case with Git and rebase that I don't understand. A simple
+workflow that might lose changes! Or so I think. Lets look at my illustration:</p>
+<p><img src="/img/diamond_git.png" alt="illustration"></p>
+<p>This is my hypothesis, and through this blogpost we will found out what actually
+happens. Will the change X return? Or is Git smart than I think? Stick around!</p>
+
+      </div>
+    </div>
+  </body>
+</html>

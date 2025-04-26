@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title = &quot;Deleting my backup by accident&quot;
+date = &quot;2022-02-02T13:43:42+01:00&quot;
+author = &quot;Theodor René Carlsen&quot;
+authorTwitter = &quot;teddytroll&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;&quot;, &quot;&quot;]
+keywords = [&quot;backup&quot;, &quot;cli&quot;]
+description = &quot;&quot;
+showFullContent = false
+readingTime = true
++++</p>
+<p>In my post about <a href="/posts/notetaking">notetaking</a> I displayed my simple backup
+solution (It's more like mirroring/online syncing since I don't keep old data
+because of storage limitations). It's been working great but the problem I had
+sometimes is that I download big files to my notetaking directories, which will
+fill the drive of the VM I'm renting (It's only about 25 GBs).</p>
+<pre><code class="language-bash">&gt; cat /etc/cron.daily/copy_notes
+#!/bin/bash
+rsync -a --delete /home/theodorc/notater api.theodorc.no:/home/theodorc/notater
+</code></pre>
+<p>I wanted to exclude any file with the prefix &quot;no_backup&quot; to solve this. This way
+I could mark files that I didn't want to backup. Rsync supports this through the
+&quot;--exclude&quot; flag, but I was unsure of the syntax of the pattern to match. So I
+made a test directory to try it out with two example files.</p>
+<pre><code class="language-bash">&gt; mkdir test &amp;&amp; cd test
+~/test&gt; touch gurba no_backup # create two empty files
+~/test&gt; ls
+gurba no_backup
+</code></pre>
+<p>With not much thought, I copied my original oneliner for backing up my files,
+added the &quot;--exclude&quot; flag and set my current directory as the source and the home
+folder on my server as the destination.</p>
+<pre><code class="language-bash">~/test&gt; rsync -a --delete --exclude=&quot;^no_backup.*&quot; . api.theodorc.no:~
+</code></pre>
+<p>This command ended up deleting almost every file in the home directory of my
+server. Do you see why?</p>
+<pre><code class="language-bash">theodorc@disco&gt; ssh api.theodorc.no # yes, the hostname of my laptop is &quot;disco&quot;
+theodorc@api&gt; ls
+dev gurba no_backup_gurba
+</code></pre>
+<p>My little script uses the &quot;--delete&quot; flag to delete files that no longer exist
+on my local computer. If I delete something locally, I most likely don't care
+about it being in my backup. (I should probably change this assumption, since
+accidentally deleting a file locally will save me. Bricking my computer has been
+the biggest worry). Rsync checks my home directory on the remote and deletes
+everything that doesn't not match the files in the current directory on the
+local machine.</p>
+<p>So in the end the syntax was wrong and I lost my backup :--) Till next time,
+be careful with which flags I'm using.</p>
+<p>Luckily I have all the files locally, so on the next backup run they will
+return. Not so lucky is two of my projects. Images for my <a href="https://theodorc.no">homepage</a>
+(which I'm already thinking about retiring) was deleted and the database for my
+<a href="https://twitter.com/ChessDaily">ChessPuzzleBot</a> was deleted. Oh well.</p>
+
+      </div>
+    </div>
+  </body>
+</html>

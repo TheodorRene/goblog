@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title = &quot;ZSH - What's that config?&quot;
+date = &quot;2022-01-13T19:34:17+01:00&quot;
+author = &quot;Theodor René Carlsen&quot;
+authorTwitter = &quot;teddytroll&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;config&quot;, &quot;dotfiles&quot;]
+keywords = [&quot;&quot;, &quot;&quot;]
+description = &quot;&quot;
+showFullContent = false
+readingTime = true
+draft = false
++++</p>
+<p>I have been using a lot of CLI tools the last few years and have accumulated a
+plethora of configurations, AKA dotfiles. They are all gathered in a git repo on
+<a href="https://github.com/theodorene/dotfiles">Github</a> with a script that adds
+<a href="https://en.wikipedia.org/wiki/Symbolic_link">symlinks</a> so the files are
+put in the right place. With this experience, some might be intrigued by my
+specific configs and possibly learn some from it. I will try to make a series on
+each one of them. The first one is my Zsh config.</p>
+<h2>Aliases</h2>
+<p>Aliases are great for those hard-to-remember commands or commands that are used
+often. The aliases are introduced in the order of how often I use them.</p>
+<pre><code class="language-bash"># Number of aliases
+&gt; grep -c alias .zshrc 
+34
+</code></pre>
+<h3>lr</h3>
+<pre><code class="language-bash">alias lr=&quot;ls -ltrh&quot;
+</code></pre>
+<p>Capital letters indicate the flag explained: show as List, sort by Time, in
+Reverse, with Human readable size outputs (kilobytes instead of bytes). In
+english, show me the most recent files on the bottom. Those files are often more
+of interest than the standard stort for &quot;ls -l&quot;.</p>
+<h3>Pomodoro</h3>
+<pre><code class="language-bash">alias work=&quot;sleep $((60*20)) &amp;&amp; aplay /usr/share/sounds/speech-dispatcher/test.wav &amp;&amp;  notify-send -t 5000 -u critical '5 minutter pause'&quot;
+alias break=&quot;sleep $((60*5)) &amp;&amp; aplay /usr/share/sounds/speech-dispatcher/test.wav &amp;&amp;  notify-send -t 5000 -u critical '5 minutter pause'&quot;
+</code></pre>
+<p>I stole the idea of a Bash Pomodoro timer from
+<a href="https://github.com/calidbaba/">Carl</a> but nevertheless, here is my solution. The
+audiofile can be whatever you want, but this was the only file I could find on
+my computer. Notify-send gives a nice notification window in the top right
+corner of my screen.</p>
+<h3>Clipboard</h3>
+<pre><code class="language-bash">alias clip=&quot;xclip -selection c&quot;
+</code></pre>
+<p>Using the clipboard in the terminal has always been a pain in the ass for me.
+This alias lets me pipe output into my clipboard. Xclip is not installed by
+default on distros like Ubuntu. Example use:</p>
+<pre><code class="language-bash">&gt; ls -l | clip
+</code></pre>
+<h3>Installing packages</h3>
+<pre><code class="language-bash">alias pacupgrade=&quot;sudo pacman -Syyu&quot;
+alias pacsearch=&quot;sudo pacman -Ss&quot;
+alias pacinstall=&quot;sudo pacman -S&quot;
+alias pacremove=&quot;sudo pacman -R&quot;
+alias pacclean='sudo paccache -r &amp;&amp; sudo pacman -Qtdq | sudo pacman -Rns -'
+</code></pre>
+<p>Until recently, I used Manjaro on both my laptop and desktop computer. Then
+these commands were handy as I thought the ergonomics of Pacman wasn't quite
+there. In the future, I want to make a bash function that is package
+manager independent. At least for Apt and Pacman.</p>
+<h3>VPN</h3>
+<pre><code class="language-bash">alias vpn=&quot;sudo openconnect -bq --user=$USER vpn.ntnu.no&quot;
+</code></pre>
+<p>At my university, a VPN is necessary to view some resources. Openconnect works
+great from the command line. This prompts for my password, which I get from my
+<em>pass</em>-function described in the next section</p>
+<h2>Functions</h2>
+<h3>Getting password</h3>
+<pre><code class="language-bash">pass() {
+    bw get password $1 | xclip -selection c &amp;&amp; echo &quot;Password copied&quot;
+}
+</code></pre>
+<p>I'm a big fan of Bitwarden as a password manager. It is open source, the free
+solution is comprehensive, and the device support is decent. It has CLI tool and
+with it I fetch some of my passwords. Using pass like in the following snippet
+brings my NTNU password into my clipboard.</p>
+<pre><code class="language-bash">&gt; pass feide
+? Master password: [input is hidden]
+Password copied
+</code></pre>
+<h3>Getting the wifi password</h3>
+<pre><code class="language-bash"># This doesnt work all the time
+wifi_pass(){
+    sudo grep -oP '^psk=\K\w+' /etc/NetworkManager/system-connections/$(nmcli -t -f name connection show --active | head -n1).nmconnection
+}
+</code></pre>
+<p>It has to be a better way for this, but it works most of the time, and that's
+enough for me. Quite convenient. It searches for a specific line in a file for
+the current connected wireless network.</p>
+<h3>Using a USB-drive</h3>
+<pre><code class="language-bash">mnt(){
+    sudo mount $1 /mnt/usb &amp;&amp; cd /mnt/usb &amp;&amp; ls
+}
+umnt(){
+    sudo umount /mnt/usb
+}
+</code></pre>
+<p>Some window managers on Linux, like i3, will not do a lot for you. One of those
+things is auto mounting USB-drives. I could probably use some other service or
+some systemd magic to make this happen, but I like this. Use:</p>
+<pre><code class="language-bash">&gt; mnt /dev/&lt;your device&gt;
+</code></pre>
+<h3>Searching</h3>
+<pre><code class="language-bash">tgrep(){
+    command grep -RIin --color=auto --exclude-dir={.git,venv,node_modules} $1 *
+}
+</code></pre>
+<p>You might be familiar with &quot;ag&quot; and &quot;rg&quot;. They are great alternatives to grep
+that is much faster. Sometimes you might be on a system without those programs.
+This function makes grep work like &quot;ag&quot; and &quot;rg&quot; except for the speed.</p>
+<pre><code class="language-bash">pdfgrep(){
+    command pdfgrep -i $1 *
+}
+</code></pre>
+<p>I have also done this with pdfgrep. It's a program for searching through PDFs.
+Quite convenient when you have a home exam and want to search through old exam
+solutions (When it's allowed, of course).</p>
+<h2>Other stuff</h2>
+<h3>Pager</h3>
+<pre><code class="language-bash">export LESS=&quot;-RFX&quot;
+</code></pre>
+<p>This line fixes a pet peeve for me. Some programs like git use a &quot;pager&quot; for
+displaying data. With git a &quot;git diff&quot; might have little output, and I don't
+like the pager to be opened for so little data. With this environment variable,
+Less will only open if the data is of a certain size, other times it will just
+display the data in the terminal.</p>
+<h3>Plugins</h3>
+<pre><code class="language-bash">plugins=(
+    git # adds aliases for git (gst == git status etc)
+    wd # adds shortcuts to directories 
+    catimg # try to display an image in the terminal
+    last-working-dir # open last working directory when opening a new terminal
+    fzf # fuzzy searching through history and directories
+    extract # unzip most archive formats with the command &quot;x&quot;
+    sudo # double tap Esc to run the last command with sudo
+    docker # autocomplete for docker commands
+    autojump # jump to often visited directories
+)
+</code></pre>
+<p>I will not explain all of these since some are self-explanatory. Autojump is a
+bit hard to explain, but it tries its best to jump to the correct directory by
+just giving the name of the directory.</p>
+<pre><code class="language-bash">theodorc@abba ~
+&gt; j blog
+/home/theodorc/dev/blog/content
+theodorc@abba ~/dev/blog/content
+&gt; j b
+/home/theodorc/dev/blog
+theodorc@abba ~/dev/blog
+&gt;
+</code></pre>
+<p>As you can see, it's trying its best</p>
+<p>Example use of extract:</p>
+<pre><code class="language-bash">&gt; x my_zip_file.zip
+&gt; x my_zip_file.tar
+&gt; x my_zip_file.tar.gz
+</code></pre>
+<p>It handles all these cases as you would expect.</p>
+<h3>Man</h3>
+<p>I am fond of using man pages for documentation and often expect
+program authors to include a man page that explains the use.</p>
+<pre><code class="language-bash">export MANPAGER='nvim +Man!'
+</code></pre>
+<p>This environment variable lets me use Neovim for viewing man-pages. It gives
+nicer colors, and I'm used to Vim for movement. Not that useful.</p>
+<pre><code class="language-bash">man(){
+    command man $1 || $_ --help
+}
+</code></pre>
+<p>Some programs do not include a man page. With this command, the program is run
+with &quot;--help&quot; which has evolved into a common way to display the manual.</p>
+<h2>Finally</h2>
+<p>Those were some snippets from my zsh config. Please do tweet
+<a href="https://twitter.com/Teddytroll">@teddytroll</a> if you include something into your
+config or found anything of interest. See you on the next installation of
+&quot;What's that config&quot;. It will probably be my Neovim config.</p>
+
+      </div>
+    </div>
+  </body>
+</html>

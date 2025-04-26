@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title = &quot;10 things holding you back from becoming the worlds best developer&quot;
+date = &quot;2024-01-08T17:36:40+01:00&quot;
+author = &quot;Theodor René Carlsen (Theo)&quot;
+authorTwitter = &quot;theodorc_&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;10xDeveloper&quot;, &quot;programming&quot;, &quot;tips&amp;tricks&quot;]
+keywords = [&quot;best&quot;, &quot;10xDeveloper&quot;]
+description = &quot;Do these 10 simple things different and your life will change&quot;
+showFullContent = false
+readingTime = false
++++</p>
+<p>As a last minute addition to a &quot;Tech show n tell&quot; at my previous employer I
+quickly put together this list of &quot;the top 10 things holding you back from
+coming the worlds best developer/programmer&quot;. I enjoyed making the list so to
+make sure it doesn't get lost in the void I'm posting it here as well. Its been
+translated from Norwegian and some minor adjustments has been made so that it
+works as a blogpost.</p>
+<p>So follow along and make the necessary adjustments so you can be that 10x
+developer you've always dreamed of.</p>
+<p>(Also I've moved to Copenhagen🇩🇰. Please get in touch if you are in the city and
+want to hang or chat. k thx bye)</p>
+<h2>1. You have a functioning Caps lock key</h2>
+<p>F*ck caps lock. Why would you ever use caps lock. Please bind it to Ctrl and
+your wrists will thank me later</p>
+<h2>2. You're not using brands in Typescript</h2>
+<p>Don't let your code be stringly typed!! Add some compile time differentiation
+between your strings:</p>
+<pre><code class="language-ts">type Creds = {
+  username: string;
+  password: string;
+};
+
+function logIn(username: string, password: string) {/* do stuff */}
+logIn(creds.password, creds.username);
+// No type error, but obviously wrong
+
+// Typescript/javascript voodoo magic. Don't worry about it
+declare const brand: unique symbol;
+
+// Woohoo brands
+type Brand&lt;T, TBrand&gt; = T &amp; { [brand]: TBrand };
+type Username = Brand&lt;string, &quot;Username&quot;&gt;;
+type Password = Brand&lt;string, &quot;Password&quot;&gt;;
+
+type CredsSafe = {
+  username: Username
+  password: Password;
+};
+function logIn(username: Username, password: Password){}
+
+logIn(creds.password, creds.username);
+&lt;!-- Argument of type 'Password' is not assignable to parameter of type 'Username'. --&gt;
+&lt;!--   Type 'Password' is not assignable to type '{ [brand]: &quot;Username&quot;; }'. --&gt;
+&lt;!--     Types of property '[brand]' are incompatible. --&gt;
+&lt;!--       Type '&quot;Password&quot;' is not assignable to type '&quot;Username&quot;'.(2345) --&gt;
+</code></pre>
+<p>Be aware that you can't differentiate between <code>Username</code> and <code>Password</code> at
+runtime, but it's still convenient.</p>
+<p>In the end they work like normal strings, and can even be passed to functions
+that take &quot;string&quot; as a parameter. But it will error if you are using brands and
+it doesn't match the brand set in the function declaration.</p>
+<h2>3. Your .gitconfig is still the default!!</h2>
+<pre><code class="language-bash">&gt; cat ~/.gitconfig
+# just do `git &lt;ur alias&gt;`
+[alias]
+unstage = restore --staged # why isn't this already in git??
+amend = commit --amend --no-edit # amend and don't reword commit message
+pr = !gh pr create # The github cli is pretty nice! Creates a PR
+prview = !gh pr view --web # View pull request in browser
+view = !gh repo view --web # View repo in browser
+pf = push --force-with-lease # Always --force-with-lease, never --force
+
+prfix = !git commit -a --amend --no-edit &amp;&amp; git push --force-with-lease
+# -a : Add all tracked files
+# --amend: amend to previous commit
+# --no-edit: dont prompt for rewording of commit message
+# Use this when your colleagues highlight typos or wants you
+# to rename a function in your PR
+
+[pull]
+rebase = true # 🌶 take: always rebase
+autoStash = true # Basically: git stash &amp;&amp; git pull &amp;&amp; git stash pop
+
+[push]
+autoSetupRemote = true  
+# No more &quot;There is no tracking information for the current branch.&quot;
+# It just does what you expect when pushing commits from a new branch
+
+</code></pre>
+<p>Also add this to your {bash,zsh}.rc</p>
+<pre><code class="language-bash">alias lr=&quot;ls -ltrh&quot;
+# -t Sort by time, newest first
+# -r reverse
+# -h human readable size
+</code></pre>
+<h2>4. You do crazy🥴 git stuff without doing a backup</h2>
+<p>Just copy the folder, do wacky stuff in the original folder and if all hell
+breaks loose just start over in the backup folder. There is no shame in this!
+Swallow your pride! And I'm saying this as person that has an above average
+interest in git.</p>
+<h2>5. You actively try to memorize🧠 cli commands!!</h2>
+<p>Just use <code>Ctrl-r</code> and search through your history. If you use a command often
+enough you will remember it. Anything else is not worth memorizing.</p>
+<ul>
+<li>Bonus tip: Use <a href="https://github.com/junegunn/fzf">fzf</a> or some other fuzzy
+searcher with &quot;Ctrl-r&quot;</li>
+<li>Bonus tip numero dos🌶: Use Github Copilot Cli</li>
+</ul>
+<h1>6. Your prompt is on a single line!</h1>
+<p>Add some space! Take a breather 🫁😫</p>
+<p>I'm sorry to put Scott Hanselman as an example here, I really like him, but
+please add a newline!! It hurts looking at it. (I also despise the Powerline
+theme, but I won't go into that. It's a personal preference)</p>
+<p><img src="/img/scott_screen.png" alt="Scott Hanselmans prompt"></p>
+<p>My prompt:</p>
+<pre><code class="language-bash">~ dev/blank/val |main*|                                               [18:42:23]
+&gt; echo &quot;hello&quot;
+&quot;hello&quot; 
+</code></pre>
+<ul>
+<li>Full path from $HOME indicated as a tilde(~)</li>
+<li>Current branch and if there are any changes</li>
+<li>Removed unnecessary info I already know  (like username and hostname)</li>
+<li>Simple prompt arrow, or &quot;🐊crocodiles mouth&quot; as we say in Norwegian</li>
+<li>Timestamp for when the command was run. Good for long running tasks, but
+thinking about removing it</li>
+<li>I'm also considering adding the exit code of the command, but I don't use that
+info often</li>
+</ul>
+<h2>7. You're not using <code>Ctrl+k</code> in Slack or Github 😤</h2>
+<p><code>Ctrl+k</code> is usually search or a command bar for your current application.</p>
+<p>It's sooo nice. Just try it. It's also supported many other places(sorted by how
+often I use it):</p>
+<ul>
+<li>MDN</li>
+<li>Tailwind docs</li>
+<li>Spotify(!)</li>
+<li>New React dos</li>
+<li>Nextjs docs</li>
+</ul>
+<p>++++ many more</p>
+<p>I must warn you that it will be very annoying when a page doesn't implement
+this. (Like my blog!)</p>
+<p>Bonus: <code>Ctrl+l</code> to jump to the urlbar. Possibly <code>Cmd+l</code> on Macs</p>
+<p>Bonus 2: Using <a href="https://vimium.github.io/">vimium</a> for navigation and to click
+links in the browser</p>
+<h2>8. You see emails when you open your email client 📧</h2>
+<p>And by that I mean, why are you not using inbox zero📥??? I think this was a big
+hype a couple of years ago, and I never stopped.</p>
+<p><strong>Here's how it works:</strong></p>
+<p>You check your emails. If any of the emails needs no action from you just
+archive them. If you need to handle them somehow, do it right away. If you can't
+do it now, postpone it until later when you can(Gmail has a button for this).
+Any other emails with like tickets or attachments I need later I just
+favorite or label and then archive.</p>
+<p>This way you get a peace of mind when you open your email client, knowing that
+if there are no emails, there is nothing for you to do.</p>
+<p>In practice its quite different, but you get the idea. Sometimes I keep an email
+around until I've handled it. I currently have 4 emails in my mailbox/client.</p>
+<p>Bonus: Add keybindings in Gmail. You do it in the settings
+<a href="https://support.google.com/mail/answer/6594?hl=en&amp;co=GENIE.Platform%3DDesktop">somewhere</a>
+and then you can archive by just pressing &quot;e&quot; and navigate with vim-keybindings</p>
+<h2>9. You remember the difference between <code>??</code> and <code>||</code> in Javascript</h2>
+<ul>
+<li>You are too good at your job</li>
+<li>Touch grass</li>
+<li>You should google it once a week and then double check later when submitting the PR</li>
+</ul>
+<h2>10. You use Vim</h2>
+<p>I have probably saved 27 seconds over the last 5 years I've been using
+Vim/Neovim. And I've lost 7 months to configuring stuff and debugging. Just use
+VScode with Vim keybindings unless you are looking for a new hobby.</p>
+<p>(Check out my <a href="https://github.com/TheodorRene/dotfiles/tree/main/nvim">dotfiles</a>
+repo for neovim inspiration or see my previous
+<a href="/posts/top5-nvim-plugins">blogpost</a> on some cool plugins.</p>
+<h1>11. (Bonus tip because why artificially limit yourselves) You have one big playlist with everything!👿</h1>
+<p>Make a new one every month!! I've done this for the last 3 years and its fun to
+look back at. It also keeps my playlist fresh and in tune with my rapidly
+changing music taste when shuffling the current month. They are all in a folder,
+but Spotify doesn't allow me to share it so here is my
+<a href="https://open.spotify.com/playlist/2u2FRGC4IIkW6y7xXpUwFQ">playlist</a> for January
+thus far.</p>
+<p>And yes, I should probably start using Last.fm, but I'm in a reverse sunk cost
+fallacy where there are so many years I haven't used it that i feel bad for the
+lost data 😢 Oh well. Maybe one day</p>
+<p>Superbonus: switch up your perfume when your going into a new <em>era</em>. I'm currently
+wearing my &quot;new job in Copenhagen&quot;-cologne. Quite rare!</p>
+<h1>Fin</h1>
+<p>That's all! Now you will finally be the best. Enjoy your new life. Also share
+your personal list with me either on X(<code>@theodorc_</code>) or
+Mastodon(<code>theodorc@snabelen.no</code>). Any typos or grammatical errors can be fixed
+with a PR or an issue on
+<a href="https://github.com/TheodorRene/blog/blob/main/content/posts/worlds-best-programmer.md">Github</a>.(There
+might be some because this blogpost is 🧙<em>free from AI</em>🧙: No LLMs was used in the
+making of it and thus no graphics card were hurt in the process😄.</p>
+<p>Cowsay moo:</p>
+<hr>
+<h2>&lt; Takk for meg &gt;</h2>
+<pre><code>    \   ^__^
+     \  (oo)\_______
+        (__)\       )\/\
+            ||----w |
+            ||     ||
+</code></pre>
+
+      </div>
+    </div>
+  </body>
+</html>

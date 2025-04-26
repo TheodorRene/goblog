@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title= &quot;5 great Neovim plugins for 2023 🤙&quot;
+date = &quot;2023-01-02T16:04:00+01:00&quot;
+author = &quot;Theodor &quot;
+authorTwitter = &quot;theodorc_&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;neovim&quot;, &quot;cli&quot;, &quot;config&quot;, &quot;2023&quot;, &quot;plugin&quot;, &quot;git&quot;, &quot;linux&quot;]
+keywords = [&quot;&quot;, &quot;&quot;]
+description = &quot;Up to date plugins for your Neovim config in 2023. At least some of my favorites&quot;
+showFullContent = false
+readingTime = true
+draft = false
++++</p>
+<p>I finally finished my master thesis June 2022 (will write a post on it someday),
+and I started in my first &quot;real&quot; job in August. The project that I was put on
+was a brand new Next.js project with typescript+tailwind+hasura(postgres).
+Initially I started using VScode(which seems to be turning into a default for
+javascript projects 🤷), but I was quickly hitting its limits on
+configurability. One Friday night I rewrote my neovim config into lua, and now
+I'm working on honing the config until I get the comfiest editing setup. With
+this, quite laborious and long, process I have collected a few neat and nice
+plugins. Here is an unranked list on great neovim plugins (mostly written in lua) out of
+my now 40ish installed
+<a href="%22https://github.com/TheodorRene/dotfiles/blob/master/nvim/lua/plugins.lua%22">plugins</a>.
+(I assume you have LSP set up so I will not highlight the basic plugins to get
+LSP working in this post)</p>
+<p>(and yes the syntax highlighting looks kinda funky. I had to set it to vimscript
+since lua isn't supported(???) by the Hugo theme I'm using)</p>
+<h2>1. Neoscroll</h2>
+<p>Vertical movement has been and is still my limiting factor when it comes to
+speed. I've tried using <code>ctrl+d</code> and <code>ctrl+u</code> for page up and down, and also
+<code>ctrl+e</code> and <code>ctrl+y</code> for scrolling line-by-line but I always get dizzy and
+disoriented. The first step in fixing this is a tip from
+<a href="https://www.youtube.com/channel/UC8ENHE5xdFSwx71u3fDH5Xw">ThePrimagen</a>:</p>
+<pre><code class="language-vim">nmap(&quot;&lt;C-u&gt;&quot;, &quot;&lt;C-u&gt;zz&quot;);
+nmap(&quot;&lt;C-d&gt;&quot;, &quot;&lt;C-d&gt;zz&quot;);
+</code></pre>
+<p>This remapping keeps the cursor in the middle of the screen when going page up
+and down.</p>
+<pre><code class="language-vim">vim.o.scrolloff = 8;
+</code></pre>
+<p>This options makes it so that the buffer starts scrolling earlier to always show
+8 lines above or under the cursor. If you are still unsure what this does
+remember vim/nvims help pages are pretty good <code>:h scrolloff</code></p>
+<p><a href="%22https://github.com/karb94/neoscroll.nvim%22">Neoscroll</a> adds smooth motion when
+using scrolling keybindings; mimicking the act of scrolling with a mouse. Much
+more pleasant for the eye, and convenient when that sort of file exploration is
+needed.</p>
+<p><img src="/img/neoscroll.gif" alt="Neoscroll in action"></p>
+<p>Unfortunately the framerate of the gif does not do the improvement justice so
+you just have to trust me.</p>
+<h2>2. Leap</h2>
+<p>Another plugins thats helped with my vertical speed is
+<a href="%22https://github.com/ggandor/leap.nvim%22">Leap</a>. It adds a new motion using <code>s</code>
+(&quot;leap&quot; forwards) and <code>S</code> (&quot;leap&quot; backwards). Pressing <code>s</code> and two characters it
+will jump to the first occurence of that pair of characters. With duplicates it
+shows you a third character to press to leap to that destination. It feels like
+magic when you use it since you look at where you want to go, do the keystrokes,
+and boom you're there.</p>
+<p><img src="/img/leap.gif" alt="Leap"></p>
+<p>Here I want to leap to <code>tabline</code>. I press <code>sta</code> in sequence, noticing that there
+are duplicates and have to press <code>s</code> as well which is highlighted in pink/purple.</p>
+<h2>3. Neogit/Gitsigns/Diffview</h2>
+<p>I'm cheating I know but I couldn't just highlight one of them, and I should
+probably do a whole post on working with git inside vim. Git is actually
+something I enjoy working with. I currently have 26 aliases in my .gitconfig and
+I've set up <a href="%22https://difftastic.wilfred.me.uk/%22">difftastic</a> as my external
+difftool and VScode as my mergetool(haven't gotten there with neovim as of yet).
+So I'll keep this short since we are cheating.</p>
+<p>(The keymappings are mostly my own, and does not necessarily reflect the default
+mappings introduced with the plugins)</p>
+<h3><a href="%22https://github.com/lewis6991/gitsigns.nvim%22">GitSigns</a></h3>
+<ul>
+<li>Introduces a new motion: Jump between hunks using <code>[c</code> and <code>]c</code></li>
+<li>Easily stage and unstage hunks. Keybinding: <code>ctrl-g+h+s</code>. Mnemonic: git
+hunk stage</li>
+<li>Show new or deleted lines. Keybinding <code>ctrl-g+t+{d,l}</code>. Mnemonic: git
+toggle {delete_lines,lines}</li>
+</ul>
+<h3><a href="%22https://github.com/sindrets/diffview.nvim%22">Diffview</a></h3>
+<ul>
+<li>Nice diffviewer (duh). <code>ctrl+g+d+o</code></li>
+<li>Easily diff against a branch <code>ctrl+g+d+d</code> to diff against <code>develop</code></li>
+<li>Supports staging hunks</li>
+<li>Show possible commands by pressing <code>g?</code></li>
+</ul>
+<p><img src="/img/diffviewer.png" alt="Diffviewer"></p>
+<h3><a href="%22https://github.com/TimUntersberger/neogit%22">Neogit</a></h3>
+<ul>
+<li>An attempt to create <a href="%22https://magit.vc/%22">Magit</a>(git plugin for emacs) in Neovim. Mapped to <code>Alt+s</code></li>
+<li>Nice keybindings for basic and advanced operations</li>
+<li>Integration with diffview</li>
+</ul>
+<p><img src="/img/neogit.png" alt="Neogit"></p>
+<p>Right part of the screen is Neogit after pressing <code>c</code> to commit. It prompts with
+options to add, e.g <code>a</code> to amend or <code>h</code> to disable hooks. Then <code>c</code> again will
+open a buffer to edit the commit message.</p>
+<h2>4. Telescope</h2>
+<p><a href="%22https://github.com/nvim-telescope/telescope.nvim%22">Telescope</a> is a given if you have ever delved into neovim configuration. Its
+building itself up as a standard way of picking things from a list when using
+neovim. Its made by one on the neovim maintainers and is a solid piece of work
+with many integrations. These are the ones I use:</p>
+<pre><code class="language-vim">nmap('gd', ':lua require&quot;telescope.builtin&quot;.lsp_definitions()&lt;CR&gt;', &quot;Go to definitions&quot;)
+nmap('gi', ':lua require&quot;telescope.builtin&quot;.lsp_implementations()&lt;CR&gt;', &quot;Go to implementations&quot;)
+nmap('&lt;C-x&gt;d', ':lua require&quot;telescope.builtin&quot;.diagnostics()&lt;CR&gt;', &quot;Show diagnostics&quot;)
+nmap('&lt;C-x&gt;f', '&lt;CMD&gt; Telescope current_buffer_fuzzy_find &lt;CR&gt;', &quot;Current buffer fuzzy find&quot;)
+nmap('&lt;C-x&gt;b', '&lt;CMD&gt; Telescope buffers &lt;CR&gt;', &quot;Search open buffers&quot;)
+nmap('&lt;C-p&gt;', ':lua require&quot;telescope.builtin&quot;.git_files{use_git_root=false} &lt;CR&gt;', &quot;Search git files&quot;)
+nmap('&lt;leader&gt;p', ':lua require&quot;telescope.builtin&quot;.commands() &lt;CR&gt;', &quot;Search commands&quot;)
+nmap('&lt;C-f&gt;', '&lt;CMD&gt; Telescope live_grep &lt;CR&gt;', &quot;Grep through files&quot;)
+</code></pre>
+<p>(<code>nmap</code> is a function I made. Many create their own functions which are less
+verbose than whats built in. This is mine:</p>
+<pre><code class="language-vim">local function nmap(comb, cmd, desc)
+	vim.api.nvim_set_keymap('n', comb, cmd, {noremap = true, silent = true, desc = desc})
+end
+</code></pre>
+<p>)</p>
+<p>I especially use <code>ctrl+p</code> (same keybindings as VScode if I ever have to return
+to the dark side) to search for files in git repos:</p>
+<p><img src="/img/git_files.png" alt="Git files"></p>
+<p>and <code>ctr+f</code> to search through the content of
+all files:</p>
+<p><img src="/img/live_grep.png" alt="Live Grep"></p>
+<p>Both feature a nice preview of the file, but I've disabled this for <code>ctrl+p</code>.</p>
+<h2>5. Which-key</h2>
+<p>With all these plugin I've hit a limit on the number of keybindings my feeble
+brain can remember. What I've started to do is to namespace actions with a
+certain <code>ctrl+&lt;char&gt;</code> command. Maybe not the most popular choice, looks very
+emacsy, but I'm not a big fan of using the leader key since it feels to slow. An
+example is all git related actions are grouped under <code>ctrl+g</code>:</p>
+<pre><code class="language-vim">nmap('&lt;C-g&gt;s', '&lt;CMD&gt; Git status &lt;CR&gt;', &quot;GIT: status&quot;)
+nmap('&lt;C-g&gt;w', ':vsplit term://git status &lt;CR&gt;', &quot;GIT: status but with colors&quot;)
+nmap('&lt;C-g&gt;p', '&lt;CMD&gt; Git pull  &lt;CR&gt;', &quot;GIT: Pull&quot;)
+nmap('&lt;C-g&gt;do', '&lt;CMD&gt; DiffviewOpen &lt;CR&gt;', &quot;GIT: Show diff&quot;)
+nmap('&lt;C-g&gt;dq', '&lt;CMD&gt; DiffviewClose &lt;CR&gt;', &quot;GIT: Close diff&quot;)
+nmap('&lt;C-g&gt;g', ':Git ', &quot;Git: Fugitive&quot;)
+nmap('&lt;C-g&gt;dd', '&lt;CMD&gt; DiffviewOpen develop...HEAD &lt;CR&gt;', &quot;GIT: Diff develop&quot;)
+nmap('&lt;A-g&gt;', '&lt;CMD&gt; Neogit &lt;CR&gt;', &quot;Neogit&quot;) -- Except for this one 🤷
+</code></pre>
+<p>Gitsigns mappings: (see GitSigns documentation on where they should be placed
+as <code>gs</code> is not in scope in this example)</p>
+<pre><code class="language-vim">nmap('&lt;C-g&gt;hs', ':Gitsigns stage_hunk&lt;CR&gt;', {desc='stage hunk'})
+nmap('&lt;C-g&gt;hr', ':Gitsigns reset_hunk&lt;CR&gt;', {desc='reset hunk'})
+nmap('&lt;C-g&gt;hu', gs.undo_stage_hunk, {desc='undo stage hunk'})
+nmap('&lt;C-g&gt;td', gs.toggle_deleted, {desc='toggle deleted lines'})
+nmap('&lt;C-g&gt;tl', gs.toggle_linehl, {desc='toggle line highlight'})
+</code></pre>
+<p>When I press <code>ctrl+g</code> alone a &quot;HUD&quot; will open, displaying all possible actions.
+What you might have noticed is that there is a <code>desc</code> options for each keymap.
+This information is displayed in the HUD. See image below:</p>
+<p><img src="/img/which-key.png" alt="Which key"></p>
+<h2>End</h2>
+<p>These were some of my favorite plugins. Let me know if you have any tips of
+other plugins I should use. The once I use now can be found
+<a href="%22https://github.com/TheodorRene/dotfiles%22">here</a>. In the future I want to have
+a smoother Vim-session experience, and maybe a more visually appealing way of
+working with lsp-features(renaming etc). Good luck ricing your setup and
+hopefully the ecosytem will thrive and continue to be better. Support your local
+plugin maintainer ✊. I'm @theodorc_ on
+<a href="%22https://twitter.com/theodorc_%22">Twitter</a> and @theodorc@snabelen.no on Mastodon</p>
+<p>(And yes, I have line numbers disabled 😎)</p>
+
+      </div>
+    </div>
+  </body>
+</html>

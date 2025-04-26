@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title = &quot;Waybackwhen&quot;
+date = &quot;2023-03-03T12:58:32+01:00&quot;
+author = &quot;&quot;
+authorTwitter = &quot;&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;&quot;, &quot;&quot;]
+keywords = [&quot;&quot;, &quot;&quot;]
+description = &quot;&quot;
+showFullContent = false
+readingTime = false
+draft = true
++++</p>
+<h1>Slackbot i Rust</h1>
+<p>Follow these steps https://api.slack.com/authentication/basics
+og bruk BlockKit for å lage meldingen du ønsker. Sjekk ut payloaden og bruk den</p>
+<ol>
+<li>Snakk med Slack med Rust
+<ul>
+<li>veldig enkel payload, dropper ekstern bibliotek</li>
+</ul>
+</li>
+<li>Last ned bilde fra en nettside
+<ul>
+<li>Headless chrome funket akkurat som forventet</li>
+</ul>
+</li>
+<li>Last opp bilde
+<ul>
+<li>Jeg lurte en periode hvordan jeg skulle gjøre det med bilde fordi Slack
+forventer en lenke. Da må jeg hoste bildet et sted. Fant til slutt
+<code>uploads</code></li>
+</ul>
+</li>
+<li>Bruke waybackmachine
+https://archive.org/help/wayback_api.php
+https://en.wikipedia.org/wiki/Help:Using_the_Wayback_Machine#Specific_archive_copy</li>
+</ol>
+<p>Make sure you wait for a specific html tag</p>
+<ol start="5">
+<li>Lage en liste med nettsider og tidsintervall
+Hvordan sjekke om et tidsintervall finnes</li>
+</ol>
+<p>Slå alt sammen</p>
+<p>Boom</p>
+<p>Hvordan skal vi gjøre hosting?
+GCP Cloud run , hjelp fra trond</p>
+<p>Something when horribly wrong with the environmentvariables. Dont add fnutter.
+Work locally, but not in Docker
+This blogpost references this issue. I'm not using docker compose, so it could
+be still relevant
+https://dev.to/tvanantwerp/don-t-quote-environment-variables-in-docker-268h
+https://github.com/docker/compose/issues/8388
+Didn't work silently. No idea what the problem was. Most likely I didnt see any
+output because the debug_log env variable wasnt set correctly and the slack
+token wasnt working. so it did do the screenshot, but failed when uploading the
+image. I did see chromium was running but no output.</p>
+<p>I tried strace, but I did see an browser exception in the end. Big timeout
+unfortunately. Could be related to me not having logs. Strace didn't help, I
+couldnt read the output</p>
+<h1>Google cloud jaowsa</h1>
+<p>Først var planen å ha full CI/CD. Jeg fant en passende action,men den støttet
+ikke Google Cloud Run Jobs som jeg ønsket å bruke. Bare service. Derfor bestemte
+jeg meg bare for å pushe lokalet til Artifact Registry (ikke container registry
+for guds skyld siden det er jo så klart deprecated). Fikk til slutt pushet, og
+så satt opp en cloud run jobb. Men når jeg skulle legge inn en secret så
+hadde ikke lenger service accounten tilgang til den secreten. Så da ble jeg
+usikker, kan jeg ha den i env variabel? Så havnet jeg i et ormehull av IAM
+tull. Nå venter jeg på å få riktig tilgang. Se mastodon post:</p>
+<p>Pass også på at du har nok RAM. 1 gib gikk, men 512 går ikke. Ellers så virker
+Cloud run jobs perfekt til denne oppgaven.</p>
+
+      </div>
+    </div>
+  </body>
+</html>

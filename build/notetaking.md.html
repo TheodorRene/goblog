@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title = &quot;Notetaking&quot;
+date = &quot;2021-12-27T20:21:52+01:00&quot;
+author = &quot;&quot;
+authorTwitter = &quot;&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;notetaking&quot;]
+keywords = [&quot;&quot;, &quot;&quot;]
+description = &quot;&quot;
+showFullContent = false
+readingTime = false
++++</p>
+<h1>Writing notes using Markdown and Vim - My setup</h1>
+<p>I'm currently in my ~~fourth~~fifth year of studying computer science and during this
+time I've needed to write a lot of notes. After roughly a year using Onenote and
+ended up on a combination of tools I really liked. Vim and markdown. In this
+post I will go through why I made that choice, what my setup is and some final
+thoughts.</p>
+<p>My first year I used Onenote, a note taking app part of Microsofts office. It
+worked okay, it let me do notetaking using a digital pen and allowed export to
+pdf. It also synced nicely to the cloud. After some time I fell in love with Vim
+on Linux and that left me without the possibility of using Onenote. So I tried
+note taking in Vim. I really like using my preferred editor (software engineers
+sometimes have one) that I was fluent with. Using the OSs filesystem to create a
+hierarchy for the notes also was just easier. It let me do all my normal
+operations I have grown accustomed to in the terminal. I also felt more in
+control of the notes, not being scared of Onenote crashing on me and messing up
+whatever file type it is using to represent the notepads. With Markdown it was
+just me and a text file.</p>
+<p>Why markdown?</p>
+<ul>
+<li>Easy to compile to pdf, html whatever with Pandoc</li>
+<li>Simple syntax</li>
+<li>Popular format</li>
+<li>Pandocs version supports latex for math</li>
+</ul>
+<p>My setup now consists of setting the line length to 80 so it autowraps when
+hitting a limit. I have enabled Vims built in spellchecker and some handy
+keybindings to interact with it. My settings are gathered in a
+<a href="https://github.com/TheodorRene/skriveleif">Vim-plugin</a>. Mostly to see how you
+make a plugin, it is not a very comprehensive solution.</p>
+<p>Currently backup (and in some way online syncing) is done with a simple
+cron-job</p>
+<pre><code class="language-bash">&gt; cat /etc/cron.daily/copy_notes
+#!/bin/bash
+rsync -a --delete /home/theodorc/notater api.theodorc.no:/home/theodorc/notater
+</code></pre>
+<h2>Future plans</h2>
+<p>I have heard good things about Obsidian which can give a better structure and
+possibly easier online syncing.</p>
+
+      </div>
+    </div>
+  </body>
+</html>

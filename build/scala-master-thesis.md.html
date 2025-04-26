@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+    />
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;  
+    }
+    .post {
+      display: flex;
+      flex-direction: column;
+      max-width: 874px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 8px;
+    }
+    body {
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-underline-offset: 4px;
+    }
+    .fade-in {
+      animation: fadeIn 0.1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdeliver.net/npm/prismjs@v1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <div class="container">
+      <div class="post fade-in">
+        <h1>Blog</h1>
+        <p>+++
+title = &quot;Scala Master Thesis&quot;
+date = &quot;2022-04-19T14:22:47+02:00&quot;
+author = &quot;Theodor René Carlsen&quot;
+authorTwitter = &quot;teddytroll&quot; #do not include @
+cover = &quot;&quot;
+tags = [&quot;&quot;, &quot;&quot;]
+keywords = [&quot;scala&quot;, &quot;pl&quot;, &quot;master thesis&quot;]
+description = &quot;&quot;
+showFullContent = false
+readingTime = true
+draft = true
++++</p>
+<h2>Our master thesis</h2>
+<p>Short description of our master thesis. I worked with Eivind Kopperud on
+&quot;Tempura: A Graphx extension for temporal graphs in Apache
+Spark&quot;<a href="%22https://home.samfundet.no/~theodorc/final_complete_thesis_final.pdf%22">Link</a>.
+TLDR: Developed a temporal extension for Graphx, which is a library for handling
+big graphs in Spark. Through this work we had to augment existing datasets to
+get the properties we wanted from a graph. Two models were implemented and
+benchmarked against each other. This was all done in Scala, a language we had
+used somewhat in previous courses but not very much. Again with this a noted
+down a few thoughts I had on the language. This post will cover what I liked,
+disliked and what I though was missing, including some
+examples.</p>
+<h2>RDDs</h2>
+<p>The datatype we had to work with to stay withthin the distributed spark
+abastraction are RDDs, Resilient Distributed Dataset. In practice they can be
+used like how you use immutable lists. No indexing, just iterating through using
+filter, map, reduce etc.</p>
+<pre><code class="language-scala">// Type signature for dataset of tuples
+val listOfTuples: RDD[(Int,Int)]
+// RDD&lt;(Int, Int)&gt; with C-like syntax as this RDD is generic
+</code></pre>
+<h2>Named tuples</h2>
+<p>Transforming and working with the data you often had to create some ad hoc
+datastructure. Lets say you had Graph datastructure but you wanted to add a
+timestamp to it. This can be done using the product type tuple:</p>
+<pre><code class="language-scala">val graphs: RDD[Graph] = getGraphs()
+val timestamps:RDD[Instant] = getTimestamps()
+val transform = graph
+                    .join(timestamps) // Type is now RDD[(Graph,Instant)]
+                    .map(tup =&gt; {
+                        tup._1.timestamp = tup._2
+                    }
+                    )
+</code></pre>
+<p>This example could be make clearer with tuple destructuring or named tuples. Suggested syntax
+change:</p>
+<pre><code class="language-scala">                    .map((graph,timestamp) =&gt; {
+                        graph.timestamp = timestamp
+                    }
+                    )
+                    // or
+                    .join(timestamps) // Join now supports named tuples is now RDD[NamedTuple(Graph,Instant)]
+                    .map(tup =&gt; {
+                        tup.graph.timestamp = tup.timestamp
+                    }
+                    )
+</code></pre>
+<p>Right now the destructuring can be done with a clunky case statement:
+DONT THINK THIS IS THE RIGHT SYNTAX</p>
+<pre><code class="language-scala">                    .map({case (graph, timestamp) =&gt; {
+                        graph.timestamp = timestamp
+                    }
+                    )
+</code></pre>
+<h1>Implicits are bonkers</h1>
+<p>Type classes in Haskell
+Implicit parameters
+Does it confuse more than it helps?
+Easy to abuse</p>
+<h1>Verbosity of the language</h1>
+<p>Verbose ADTs. Scala3 with breaking changes leaves a severed ecosystem (Just saw
+Severance, please watch it)</p>
+<h1>Alternatives to Scala</h1>
+<p>What I'm looking for in a language:</p>
+<ul>
+<li>Good ecosystem (Possibly with interop)</li>
+<li>Functional first (immutable datastructures etc)</li>
+<li>Expressive language (Possibly with a macro system)</li>
+<li>A well thought out error handling system</li>
+<li>Simple default when it comes to HTTP server, database connection, test
+framework</li>
+</ul>
+<p>F#, Kotlin, Clojure Systems programming language</p>
+
+      </div>
+    </div>
+  </body>
+</html>
