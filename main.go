@@ -1,16 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/yuin/goldmark"
 	"html/template"
 	"os"
 	"regexp"
-	"strings"
-
-	"github.com/yuin/goldmark"
+	"sync"
+	"time"
 )
 
 func check(e error) {
@@ -20,19 +19,37 @@ func check(e error) {
 	}
 }
 
+var start time.Time
+
+var wg sync.WaitGroup
+
 func main() {
-	recreateBuildFolder()
-	addStyleSheets()
-	fmt.Println("Stylesheet(s) added")
-	buildFrontPage()
-	fmt.Println("Frontpage added")
-	buildBlogPosts()
-	fmt.Println("Build done")
+	timeIt("start", func() {
+		timeIt("build folder", recreateBuildFolder)
+		wg.Add(3)
+		go timeItDone("stylesheets", addStyleSheets)
+		go timeItDone("frontpage", buildFrontPage)
+		go timeItDone("blogpost", buildBlogPosts)
+		wg.Wait()
+	})
 }
 func recreateBuildFolder() {
 	err := os.RemoveAll("build")
 	check(err)
 	os.Mkdir("build", 0755)
+}
+
+func timeIt(name string, fn func()) {
+	start := time.Now()
+	fn()
+	fmt.Printf("%s took %s\n", name, time.Since(start))
+}
+
+func timeItDone(name string, fn func()) {
+	start := time.Now()
+	fn()
+	wg.Done()
+	fmt.Printf("%s took %s\n", name, time.Since(start))
 }
 func addStyleSheets() {
 	dat, err := os.ReadFile("templates/styles.css")
@@ -54,17 +71,21 @@ func buildBlogPosts() {
 	dir, err := os.ReadDir("posts")
 	tmplate, err := getTemplate("post", "templates/post.template.html")
 	check(err)
+	var wgBg sync.WaitGroup
 	for _, blogPost := range dir {
-
-		nameWithoutExt := blogPost.Name()[:len(blogPost.Name())-3]
-		data, err := os.ReadFile("posts/" + blogPost.Name())
-		check(err)
-		htmlString := mdToHtml(data).String()
-		var buf bytes.Buffer
-		tmplate.Execute(&buf, template.HTML(htmlString))
-		os.WriteFile("build/"+nameWithoutExt+".html", buf.Bytes(), 0755)
+		wgBg.Add(1)
+		go func(bspost os.DirEntry) {
+			defer wgBg.Done()
+			nameWithoutExt := blogPost.Name()[:len(blogPost.Name())-3]
+			data, err := os.ReadFile("posts/" + blogPost.Name())
+			check(err)
+			htmlString := mdToHtml(data).String()
+			var buf bytes.Buffer
+			tmplate.Execute(&buf, template.HTML(htmlString))
+			os.WriteFile("build/"+nameWithoutExt+".html", buf.Bytes(), 0755)
+		}(blogPost)
 	}
-	fmt.Println("Posts added")
+	wgBg.Wait()
 }
 
 type PostMetadata struct {
@@ -75,26 +96,25 @@ type PostMetadata struct {
 	date        string // for now
 }
 
-func parseMetadata(post []byte) *PostMetadata {
-	scanner := bufio.NewScanner(strings.NewReader(string(post)))
-	var lines []string
-	var metaData PostMetadata
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line == "+++" {
-			for scanner.Scan() {
-				if line == "+++" {
-					break
-				}
-				lines = append(lines, line)
-				// use regex to get each side
-			}
-			break
-		}
-	}
-
-
-}
+// func parseMetadata(post []byte) *PostMetadata {
+// 	scanner := bufio.NewScanner(strings.NewReader(string(post)))
+// 	var lines []string
+// 	var metaData PostMetadata
+// 	for scanner.Scan() {
+// 		line := scanner.Text()
+// 		if line == "+++" {
+// 			for scanner.Scan() {
+// 				if line == "+++" {
+// 					break
+// 				}
+// 				lines = append(lines, line)
+// 				// use regex to get each side
+// 			}
+// 			break
+// 		}
+// 	}
+//
+// }
 
 func generateLinkList(postNames []string) (res string) {
 	res += "<ul>\n"
