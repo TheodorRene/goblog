@@ -1,15 +1,18 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/yuin/goldmark"
 	"html/template"
 	"os"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/yuin/goldmark"
 )
 
 func check(e error) {
@@ -19,12 +22,11 @@ func check(e error) {
 	}
 }
 
-var start time.Time
-
 var wg sync.WaitGroup
+var posts []*Post
 
 func main() {
-	timeIt("start", func() {
+	timeIt("Everything took", func() {
 		timeIt("build folder", recreateBuildFolder)
 		wg.Add(3)
 		go timeItDone("stylesheets", addStyleSheets)
@@ -79,42 +81,86 @@ func buildBlogPosts() {
 			nameWithoutExt := blogPost.Name()[:len(blogPost.Name())-3]
 			data, err := os.ReadFile("posts/" + blogPost.Name())
 			check(err)
-			htmlString := mdToHtml(data).String()
+			htmlBuf := mdToHtml(data).Bytes()
+			metaData, err := parseMetadata(data)
+			check(err)
 			var buf bytes.Buffer
-			tmplate.Execute(&buf, template.HTML(htmlString))
-			os.WriteFile("build/"+nameWithoutExt+".html", buf.Bytes(), 0755)
+			tmplate.Execute(&buf, template.HTML(htmlBuf))
+			post := Post{
+				MetaData:   metaData,
+				postBuffer: &htmlBuf,
+			}
+			if !post.MetaData.Draft {
+				os.WriteFile("build/"+nameWithoutExt+".html", buf.Bytes(), 0755)
+			}
 		}(blogPost)
 	}
 	wgBg.Wait()
 }
 
-type PostMetadata struct {
-	title       string
-	tags        []string
-	draft       bool
-	description string
-	date        string // for now
+type Post struct {
+	MetaData   *PostMetadata
+	postBuffer *[]byte
 }
 
-// func parseMetadata(post []byte) *PostMetadata {
-// 	scanner := bufio.NewScanner(strings.NewReader(string(post)))
-// 	var lines []string
-// 	var metaData PostMetadata
-// 	for scanner.Scan() {
-// 		line := scanner.Text()
-// 		if line == "+++" {
-// 			for scanner.Scan() {
-// 				if line == "+++" {
-// 					break
-// 				}
-// 				lines = append(lines, line)
-// 				// use regex to get each side
-// 			}
-// 			break
-// 		}
-// 	}
-//
-// }
+type PostMetadata struct {
+	Title       string
+	Tags        []string
+	Draft       bool
+	Description string
+	Date        string // for now
+}
+
+func parseMetadata(post []byte) (*PostMetadata, error) {
+	scanner := bufio.NewScanner(strings.NewReader(string(post)))
+	var lines []string
+	var metaData PostMetadata
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "+++" {
+			for scanner.Scan() {
+				line := scanner.Text()
+				if line == "+++" {
+					break
+				}
+				lines = append(lines, line)
+				// use regex to get each side
+				re := regexp.MustCompile(`(\w+) ?=? ?(.*)`)
+				match := re.FindStringSubmatch(line)
+				key := match[1]
+				value := match[2]
+				switch key {
+				case "title":
+					metaData.Title = strings.Trim(value, `" `)
+				case "tags":
+					trimmed := strings.Trim(value, "[]")
+					parts := strings.Split(trimmed, ",")
+					for i := range parts {
+						parts[i] = strings.Trim(parts[i], `" `)
+					}
+					metaData.Tags = parts
+				case "draft":
+					myBool := true
+					if value == "false" {
+						myBool = false
+					}
+					if value != "true" && value != "false" {
+						fmt.Printf("Something else? %s\n", value)
+					}
+					metaData.Draft = myBool
+				case "description":
+					metaData.Description = strings.Trim(value, `" `)
+				case "date":
+					metaData.Date = strings.Trim(value, `" `)
+
+				}
+				// fmt.Printf("Key: %s, Value: %s\n", key, value)
+			}
+			break
+		}
+	}
+	return &metaData, nil
+}
 
 func generateLinkList(postNames []string) (res string) {
 	res += "<ul>\n"
