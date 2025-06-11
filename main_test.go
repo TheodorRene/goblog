@@ -32,13 +32,14 @@ disregard = this
 `
 	metaDataAsBytes := []byte(metaData)
 	expected := PostMetadata {
+		Filename: "hei/på/deg",
 		Title: "Config_rant",
 		Tags: []string{"", ""},
 		Draft: true,
 		Description: "hei",
 		Date: "2023-05-15T10:11:12+02:00",
 	}
-	result, err := parseMetadata(metaDataAsBytes)
+	result, err := parseMetadata(metaDataAsBytes, "hei/på/deg")
 	if err != nil {
 		t.Errorf("parseMetadata failed")
 	}

@@ -28,10 +28,11 @@ var posts []*Post
 func main() {
 	timeIt("Everything took", func() {
 		timeIt("build folder", recreateBuildFolder)
+		timeIt("blogpost", createPosts)
 		wg.Add(3)
 		go timeItDone("stylesheets", addStyleSheets)
 		go timeItDone("frontpage", buildFrontPage)
-		go timeItDone("blogpost", buildBlogPosts)
+		go timeItDone("write blogposts", writePostsToBuild)
 		wg.Wait()
 	})
 }
@@ -69,9 +70,8 @@ func buildFrontPage() {
 	os.WriteFile("build/index.html", buf.Bytes(), 0755)
 }
 
-func buildBlogPosts() {
+func createPosts() {
 	dir, err := os.ReadDir("posts")
-	tmplate, err := getTemplate("post", "templates/post.template.html")
 	check(err)
 	var wgBg sync.WaitGroup
 	for _, blogPost := range dir {
@@ -79,31 +79,42 @@ func buildBlogPosts() {
 		go func(bspost os.DirEntry) {
 			defer wgBg.Done()
 			nameWithoutExt := blogPost.Name()[:len(blogPost.Name())-3]
+			check(err)
 			data, err := os.ReadFile("posts/" + blogPost.Name())
+			metaData, err := parseMetadata(data, nameWithoutExt)
+			parsedPost := removeMetadataFromPost(data)
 			check(err)
-			htmlBuf := mdToHtml(data).Bytes()
-			metaData, err := parseMetadata(data)
-			check(err)
-			var buf bytes.Buffer
-			tmplate.Execute(&buf, template.HTML(htmlBuf))
 			post := Post{
 				MetaData:   metaData,
-				postBuffer: &htmlBuf,
+				postBuffer: &parsedPost,
 			}
-			if !post.MetaData.Draft {
-				os.WriteFile("build/"+nameWithoutExt+".html", buf.Bytes(), 0755)
-			}
+			posts = append(posts, &post)
 		}(blogPost)
 	}
 	wgBg.Wait()
 }
+func writePostsToBuild() {
+	tmplate, err := getTemplate("post", "templates/post.template.html")
+	check(err)
+	for _, post := range posts {
+		metaData := post.MetaData
+		buf := *post.postBuffer
+		htmlBuf := mdToHtml(buf).Bytes()
+		var buffer bytes.Buffer // this implements io.Writer
+		tmplate.Execute(&buffer, template.HTML(htmlBuf))
+		if !metaData.Draft {
+			os.WriteFile("build/"+metaData.Filename+".html", buffer.Bytes(), 0755)
+		}
+	}
+}
 
 type Post struct {
 	MetaData   *PostMetadata
-	postBuffer *[]byte
+	postBuffer *[]byte // just markdown
 }
 
 type PostMetadata struct {
+	Filename    string
 	Title       string
 	Tags        []string
 	Draft       bool
@@ -111,10 +122,33 @@ type PostMetadata struct {
 	Date        string // for now
 }
 
-func parseMetadata(post []byte) (*PostMetadata, error) {
+func removeMetadataFromPost(post []byte) []byte {
+	scanner := bufio.NewScanner(strings.NewReader(string(post)))
+	var lines []string
+	hasSeenSeparator := false
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "+++" && hasSeenSeparator {
+			for scanner.Scan() {
+				line := scanner.Text()
+				lines = append(lines, line)
+			}
+			break
+		}
+		if line == "+++" && !hasSeenSeparator {
+			hasSeenSeparator = true
+		}
+
+	}
+	return []byte(strings.Join(lines, "\n"))
+}
+
+func parseMetadata(post []byte, filename string) (*PostMetadata, error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(post)))
 	var lines []string
 	var metaData PostMetadata
+	metaData.Filename = filename
+	metaData.Draft = false
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "+++" {
@@ -154,7 +188,6 @@ func parseMetadata(post []byte) (*PostMetadata, error) {
 					metaData.Date = strings.Trim(value, `" `)
 
 				}
-				// fmt.Printf("Key: %s, Value: %s\n", key, value)
 			}
 			break
 		}
@@ -165,7 +198,7 @@ func parseMetadata(post []byte) (*PostMetadata, error) {
 func generateLinkList(postNames []string) (res string) {
 	res += "<ul>\n"
 	for _, name := range postNames {
-		name = name[:len(name)-3] // Remove the .md extension
+		// name = name[:len(name)-3] // Remove the .md extension
 		escapedName := template.HTMLEscapeString(name)
 		res += fmt.Sprintf("<li><a href='/%s.html'> %s </a></li>\n", escapedName, escapedName)
 	}
@@ -174,9 +207,10 @@ func generateLinkList(postNames []string) (res string) {
 }
 
 func getPostNames() (postNames []string) {
-	dir, _ := os.ReadDir("posts")
-	for _, post := range dir {
-		postNames = append(postNames, post.Name())
+	for _, post := range posts {
+		if !post.MetaData.Draft {
+			postNames = append(postNames, post.MetaData.Filename)
+		}
 	}
 	return
 }
@@ -193,14 +227,14 @@ func mdToHtml(markdownBuffer []byte) *bytes.Buffer {
 // 	return "templates/" + name + ".template.html"
 // }
 
-func getTemplateName(path string) (name *string, err error) {
-	re := regexp.MustCompile(`(?:^|/)(\w+)\.template\.`)
-	match := re.FindStringSubmatch(path)
-	if match != nil && len(match) > 1 {
-		return &match[1], nil
-	}
-	return nil, errors.New("No name found")
-}
+// func getTemplateName(path string) (name *string, err error) {
+// 	re := regexp.MustCompile(`(?:^|/)(\w+)\.template\.`)
+// 	match := re.FindStringSubmatch(path)
+// 	if match != nil && len(match) > 1 {
+// 		return &match[1], nil
+// 	}
+// 	return nil, errors.New("No name found")
+// }
 
 func getTemplate(name string, path string) (*template.Template, error) {
 	dat, err := os.ReadFile(path)
